@@ -1,0 +1,5 @@
+dataset/
+dataset/*
+*/*pycache*/*
+*pycache*
+dataset
