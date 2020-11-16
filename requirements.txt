@@ -1,2 +1,5 @@
 numpy
 argparse
+matplotlib
+pandas
+tqdm
