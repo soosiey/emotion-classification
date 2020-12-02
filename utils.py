@@ -5,6 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.decomposition import PCA,FastICA
 from sklearn.manifold import TSNE
+from sklearn.model_selection import train_test_split
 
 WHEEL_MAP = {'Pride':1,'Elation':2,'Joy':3,'Satisfaction':4,
              'Relief':5,'Hope':6,'Interest':7,'Surprise':8,
@@ -101,6 +102,23 @@ def view_features_tsne(data,labels):
     tmp = data[labels[:,0] >= 7]
     plt.scatter(*tmp.T,c='blue')
     plt.show()
+
+def split_data():
+    data = load_eeg('dataset/')
+    d,l =  data['data'],data['labels'] # preprocess_eeg(data['data']), data['labels']
+
+    tmp = np.zeros((d.shape[0],d.shape[2],d.shape[1]))
+    for i in range(tmp.shape[0]):
+        tmp[i] = d[i].T
+    d = tmp
+    xtrain,xtest,ytrain,ytest = train_test_split(d,l,test_size=.25)
+    ytrain = np.around(ytrain).astype(int)
+    ytest = np.around(ytest).astype(int)
+
+    np.save('xtrain.npy', xtrain)
+    np.save('xtest.npy', xtest)
+    np.save('ytrain.npy', ytrain)
+    np.save('ytest.npy', ytest)
 if __name__ == '__main__':
     print('Testing eeg loading...')
     data = load_eeg('dataset/')
