@@ -40,7 +40,7 @@ def main():
 
             output = model(data)
             preds = torch.max(output,1)[1]
-            correct += (preds == labels).sum().item()
+            correct += (preds == labels).all(1).sum().item()
             total += labels.size(0)
             loss = criterion(output,labels)
             optimizer.zero_grad()
@@ -62,7 +62,7 @@ def main():
 
                 output = model(data)
                 preds = torch.max(output,1)[1]
-                test_correct += (preds == labels).sum().item()
+                test_correct += (preds == labels).all(1).sum().item()
                 test_total += labels.size(0)
             print('Testing Epoch', epoch)
             print('Testing Accuracy:', test_correct/test_total)
