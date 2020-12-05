@@ -27,9 +27,9 @@ class SpectrogramLSTM(nn.Module):
     x = self.conv1(x)
     x = self.bn1(x)
     x = self.pool1(x)
-    x = self.conv2(x)
+    x = F.relu(self.conv2(x))
     x = self.bn2(x)
-    x = self.conv3(x)
+    x = F.relu(self.conv3(x))
 
     x = x.view([x.shape[0], -1, x.shape[-1]])
     x = torch.transpose(x, 1, 2)
