@@ -3,11 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class SpectrogramLSTM(nn.Module):
-  def __init__(self, num_layers, batch_size, num_hidden, num_classes):
+  def __init__(self, num_layers, num_hidden, num_classes):
     super(SpectrogramLSTM, self).__init__()
 
     self.num_layers = num_layers
-    self.batch_size = batch_size
     self.num_hidden = num_hidden
     self.num_classes = num_classes
 
@@ -32,7 +31,7 @@ class SpectrogramLSTM(nn.Module):
     x = self.bn2(x)
     x = self.conv3(x)
 
-    x = x.view([self.batch_size, -1, x.shape[-1]])
+    x = x.view([x.shape[0], -1, x.shape[-1]])
     x = torch.transpose(x, 1, 2)
 
     out, (h_t, c_t) = self.lstm1(x)
