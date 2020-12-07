@@ -5,14 +5,15 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import CustomNet
+from spectrogramLSTM import SpectrogramLSTM
 from tqdm import tqdm
 import logging
 
 def main():
 
-    logging.basicConfig(level=logging.DEBUG, filename='model4.log', filemode='a+', format='%(asctime) - 15s %(levelname) - 8s %(message) s')
+    logging.basicConfig(level=logging.DEBUG, filename='model6.log', filemode='a+', format='%(asctime) - 15s %(levelname) - 8s %(message) s')
     batch_size = 8
-    lr = .01
+    lr = .001
     epochs = 101
     train_transform = transforms.Compose([transforms.ToTensor()])
     test_transform = transforms.Compose([transforms.ToTensor()])
@@ -23,12 +24,13 @@ def main():
     test_loader = DataLoader(test_dataset,batch_size=batch_size,shuffle=True,drop_last=True)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = CustomNet(device=device, n_layers=10, h_size=20).double()
+    #model = CustomNet(device=device, n_layers=4, h_size=50).double()
+    model = SpectrogramLSTM(2,100,9).double()
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(),lr = lr)
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[15,25,40,80], gamma=.1)
+    scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=20, gamma=.1)
 
     logging.info('Using ' + device)
     for epoch in range(epochs):
@@ -38,9 +40,11 @@ def main():
         model.train()
         cnt = 0
         for batch in tqdm(train_loader):
-            data = batch['data'].to(device)
+            data = batch['data'][:,:32,:]
+            data = data.to(device)
+            #data = batch['data'].to(device)
             labels = batch['labels'].to(device)
-
+            labels = labels[:,:3]
             output = model(data)
             preds = torch.max(output,1)[1]
             correct += (preds == labels).all(1).sum().item()
@@ -60,9 +64,11 @@ def main():
             test_correct = 0
             test_total = 0
             for tbatch in tqdm(test_loader):
-                data = tbatch['data'].to(device)
+                data = tbatch['data'][:,:32,:]
+                data = data.to(device)
+                #data = tbatch['data'].to(device)
                 labels = tbatch['labels'].to(device)
-
+                labels = labels[:,:3]
                 output = model(data)
                 preds = torch.max(output,1)[1]
                 test_correct += (preds == labels).all(1).sum().item()
@@ -71,7 +77,7 @@ def main():
             logging.info('Testing Accuracy: ' + str(test_correct/test_total))
         scheduler.step()
         if(epoch % 20 == 0):
-            torch.save(model.state_dict(), 'trained_models/model4/epoch_'+str(epoch)+'.model')
+            torch.save(model.state_dict(), 'trained_models/model6/epoch_'+str(epoch)+'.model')
 
 
 

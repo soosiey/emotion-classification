@@ -106,11 +106,14 @@ def view_features_tsne(data,labels):
 def split_data():
     data = load_eeg('dataset/')
     d,l =  data['data'],data['labels'] # preprocess_eeg(data['data']), data['labels']
+    d = np.expand_dims(d,3)
+    #d,l = preprocess_eeg(data['data']), data['labels']
 
-    tmp = np.zeros((d.shape[0],d.shape[2],d.shape[1]))
-    for i in range(tmp.shape[0]):
-        tmp[i] = d[i].T
-    d = tmp
+
+    #tmp = np.zeros((d.shape[0],d.shape[2],d.shape[1]))
+    #for i in range(tmp.shape[0]):
+    #    tmp[i] = d[i].T
+    #d = tmp
     xtrain,xtest,ytrain,ytest = train_test_split(d,l,test_size=.25)
     ytrain = np.around(ytrain).astype(int)
     ytest = np.around(ytest).astype(int)

@@ -1,3 +1,11 @@
+import numpy as np
+import torch
+from torchvision import transforms
+import EmotionDataset
+from torch.utils.data import DataLoader
+from spectrogramLSTM import SpectrogramLSTM
+import torch.nn as nn
+from torch import optim
 def train(epoch, num_classes, bins, class_=0):
   model.train()
   cnt = 0
@@ -14,9 +22,6 @@ def train(epoch, num_classes, bins, class_=0):
     digitized_labels = torch.bucketize(labels, bins)
     output = model(data)
     preds = torch.max(output,1)[1]
-    print(preds)
-    if(epoch > 15):
-      print(output)
     total_loss += labels.size(0)
     loss = criterion(output, digitized_labels)
     optimizer.zero_grad()
@@ -24,7 +29,7 @@ def train(epoch, num_classes, bins, class_=0):
     optimizer.step()
     total_loss += loss.item()
     cnt += 1
-    
+
     preds = torch.bucketize(output, bins)
     # print(preds)
     train_correct += (preds == digitized_labels).all(1).sum().item()
