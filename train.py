@@ -3,7 +3,7 @@ import torch.nn as nn
 import EmotionDataset
 from torch.utils.data import DataLoader
 import torch.optim as optim
-from models import SpectrogramLSTM
+from models.spectrogramLSTM import SpectrogramLSTM
 from tqdm import tqdm
 import logging
 
