@@ -1,11 +1,15 @@
 import numpy as np
+
 import torch
 from torchvision import transforms
 import EmotionDataset
 from torch.utils.data import DataLoader
-from spectrogramLSTM import SpectrogramLSTM
+
+from models.spectrogramLSTM import SpectrogramLSTM
+
 import torch.nn as nn
 from torch import optim
+
 def train(epoch, num_classes, bins, class_=0):
   model.train()
   cnt = 0
@@ -15,9 +19,10 @@ def train(epoch, num_classes, bins, class_=0):
   for batch in (train_loader):
     data = batch['data'].to(device).double()
     if num_classes == 1:
-      labels = batch['labels'][:,class_,np.newaxis].to(device).double()
+      labels = batch['labels'][:, class_, np.newaxis].to(device).double()
     else:
       labels = batch['labels'].to(device).double()
+      
     labels = labels[:,:3]
     digitized_labels = torch.bucketize(labels, bins)
     output = model(data)
@@ -88,8 +93,6 @@ if __name__ == '__main__':
     model = SpectrogramLSTM(num_layers, num_hidden, num_classes)
     device = 'cuda' if CUDA and torch.cuda.is_available() else 'cpu'
     model.double().to(device)
-
-    print(device)
 
     lr = 1e-8
     epochs = 100
